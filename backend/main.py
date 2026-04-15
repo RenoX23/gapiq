@@ -11,7 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from parser import extract_text_from_pdf
 import logging
 
-
+from enhancer import enhance
+from models import AnalysisOutput
 
 logging.basicConfig(
     level=logging.INFO,
@@ -100,5 +101,31 @@ def score(payload: AnalysisInput):
         jd = extract_jd(payload.jd_text)
         scores = compute_scores(resume, jd)
         return {"status": "ok", "scores": scores}
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+
+
+@app.post("/analyze", response_model=AnalysisOutput)
+def analyze(payload: AnalysisInput):
+    if not payload.resume_text.strip():
+        raise HTTPException(status_code=400, detail="Resume text is empty.")
+    if not payload.jd_text.strip():
+        raise HTTPException(status_code=400, detail="JD text is empty.")
+
+    try:
+        resume = extract_resume(payload.resume_text)
+        jd = extract_jd(payload.jd_text)
+        scores = compute_scores(resume, jd)
+        enhancement = enhance(resume, jd, scores)
+
+        return AnalysisOutput(
+            scores=scores,
+            gaps=enhancement["gaps"],
+            recommendations=enhancement["recommendations"],
+            roadmap=enhancement["roadmap"],
+            recruiter_lens=enhancement["recruiter_lens"]
+        )
+
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))

@@ -1,21 +1,33 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import UploadSection from "./components/UploadSection"
+import ResultSection from "./components/ResultSection"
 
 function App() {
-  const [status, setStatus] = useState("checking...")
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/health")
-      .then(res => res.json())
-      .then(data => setStatus(data.status))
-      .catch(() => setStatus("backend unreachable"))
-  }, [])
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-800">GapIQ</h1>
-        <p className="mt-2 text-gray-500">Backend status: <span className="font-medium text-green-600">{status}</span></p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <h1 className="text-2xl font-bold text-gray-800">GapIQ</h1>
+        <p className="text-sm text-gray-500">AI-Powered Career Gap Analyzer</p>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 py-8">
+        <UploadSection
+          setResult={setResult}
+          setLoading={setLoading}
+          setError={setError}
+          loading={loading}
+        />
+        {error && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+        {result && <ResultSection result={result} />}
+      </main>
     </div>
   )
 }

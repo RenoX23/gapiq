@@ -1,3 +1,7 @@
+from extractor import extract_resume, extract_jd
+from models import ExtractionResult
+
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
@@ -59,3 +63,24 @@ def parse_jd(payload: JDInput):
     cleaned = payload.jd_text.strip()
     logger.info(f"JD received. Characters: {len(cleaned)}")
     return {"status": "ok", "text": cleaned, "char_count": len(cleaned)}
+
+
+
+class AnalysisInput(BaseModel):
+    resume_text: str
+    jd_text: str
+
+@app.post("/extract", response_model=ExtractionResult)
+def extract(payload: AnalysisInput):
+    if not payload.resume_text.strip():
+        raise HTTPException(status_code=400, detail="Resume text is empty.")
+    if not payload.jd_text.strip():
+        raise HTTPException(status_code=400, detail="JD text is empty.")
+
+    try:
+        resume = extract_resume(payload.resume_text)
+        jd = extract_jd(payload.jd_text)
+        logger.info("Extraction complete")
+        return ExtractionResult(resume=resume, jd=jd)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))

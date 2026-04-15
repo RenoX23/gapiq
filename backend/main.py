@@ -1,7 +1,7 @@
 from extractor import extract_resume, extract_jd
 from models import ExtractionResult
 
-
+from scorer import compute_scores
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
@@ -82,5 +82,23 @@ def extract(payload: AnalysisInput):
         jd = extract_jd(payload.jd_text)
         logger.info("Extraction complete")
         return ExtractionResult(resume=resume, jd=jd)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+
+
+
+@app.post("/score")
+def score(payload: AnalysisInput):
+    if not payload.resume_text.strip():
+        raise HTTPException(status_code=400, detail="Resume text is empty.")
+    if not payload.jd_text.strip():
+        raise HTTPException(status_code=400, detail="JD text is empty.")
+
+    try:
+        resume = extract_resume(payload.resume_text)
+        jd = extract_jd(payload.jd_text)
+        scores = compute_scores(resume, jd)
+        return {"status": "ok", "scores": scores}
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))

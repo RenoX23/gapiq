@@ -162,6 +162,7 @@ safetensors==0.5.2
 scikit-learn==1.8.0
 scipy==1.15.3
 seaborn==0.12.2
+sentence-transformers==5.4.1
 shap==0.50.0
 shellingham==1.5.4
 six==1.16.0

@@ -45,26 +45,41 @@ def score_seniority(signals: list, required: str) -> int:
 def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
     logger.info("Computing deterministic scores")
 
+    # Technical — overlap on skills
     technical = score_overlap(resume.skills, jd.required_skills)
 
-    experience_text_a = " ".join(resume.experience)
-    experience_text_b = " ".join(jd.required_skills + jd.nice_to_have)
+    # Boost technical if partial matches exist
+    if technical == 0:
+        resume_skills_text = " ".join(resume.skills).lower()
+        jd_skills_text = " ".join(jd.required_skills).lower()
+        technical = score_tfidf(resume_skills_text, jd_skills_text)
+
+    # Experience — TF-IDF on experience vs all JD requirements
+    experience_text_a = " ".join(resume.experience + resume.skills)
+    experience_text_b = " ".join(jd.required_skills + jd.nice_to_have + jd.keywords)
     experience = score_tfidf(experience_text_a, experience_text_b)
 
+    # Seniority
     seniority = score_seniority(resume.seniority_signals, jd.seniority)
 
+    # Domain — overlap plus TF-IDF fallback
     domain = score_overlap(resume.keywords, jd.keywords)
+    if domain == 0:
+        domain_text_a = " ".join(resume.keywords + resume.skills)
+        domain_text_b = " ".join(jd.keywords + jd.required_skills)
+        domain = min(100, int(score_tfidf(domain_text_a, domain_text_b) * 1.5))
 
-    language_text_a = " ".join(resume.skills + resume.keywords)
-    language_text_b = " ".join(jd.required_skills + jd.keywords)
+    # Language — full profile vs full JD
+    language_text_a = " ".join(resume.skills + resume.keywords + resume.experience)
+    language_text_b = " ".join(jd.required_skills + jd.keywords + jd.nice_to_have)
     language = score_tfidf(language_text_a, language_text_b)
 
     scores = {
-        "technical": technical,
-        "experience": experience,
+        "technical": min(100, technical),
+        "experience": min(100, experience),
         "seniority": seniority,
-        "domain": domain,
-        "language": language
+        "domain": min(100, domain),
+        "language": min(100, language)
     }
 
     logger.info(f"Scores computed: {scores}")

@@ -34,7 +34,7 @@ Return ONLY valid JSON. No explanation, no markdown, no extra text.
 
 Format:
 {{
-  "required_skills": ["must-have skills explicitly stated"],
+  "required_skills": ["must-have skills both explicitly stated AND reasonably implied by the role description"],
   "nice_to_have": ["preferred but not mandatory skills"],
   "keywords": ["important domain keywords"],
   "seniority": "junior or mid or senior"

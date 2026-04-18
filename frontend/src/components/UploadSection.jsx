@@ -20,7 +20,7 @@ export default function UploadSection({ setResult, setLoading, setError, loading
       setStep(STEPS[0])
       const formData = new FormData()
       formData.append("file", file)
-      const parseRes = await axios.post("http://127.0.0.1:8000/parse/resume", formData)
+      const parseRes = await axios.post("https://gapiq-backend.onrender.com", formData)
       const resumeText = parseRes.data.text
 
       setStep(STEPS[1])
@@ -30,7 +30,7 @@ export default function UploadSection({ setResult, setLoading, setError, loading
       await new Promise(r => setTimeout(r, 500))
 
       setStep(STEPS[3])
-      const analyzeRes = await axios.post("http://127.0.0.1:8000/analyze", {
+      const analyzeRes = await axios.post("https://gapiq-backend.onrender.com", {
         resume_text: resumeText,
         jd_text: jdText
       })

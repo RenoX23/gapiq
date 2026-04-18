@@ -162,7 +162,6 @@ safetensors==0.5.2
 scikit-learn==1.8.0
 scipy==1.15.3
 seaborn==0.12.2
-sentence-transformers==5.4.1
 shap==0.50.0
 shellingham==1.5.4
 six==1.16.0
@@ -193,9 +192,6 @@ threadpoolctl==3.5.0
 tldextract==5.3.1
 tokenizers==0.21.0
 toml==0.10.2
-torch==2.7.1+cu118
-torchaudio==2.7.1+cu118
-torchvision==0.22.1+cu118
 tornado==6.4.2
 tqdm==4.67.1
 traitlets==5.14.3

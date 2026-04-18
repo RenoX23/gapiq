@@ -115,3 +115,8 @@ async def analyze(request: Request, payload: AnalysisInput):
         )
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
+
+
+@app.get("/")
+def root():
+    return {"service": "GapIQ API", "status": "ok", "docs": "/docs"}

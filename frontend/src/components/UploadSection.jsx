@@ -1,6 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 
+const BASE_URL = "https://gapiq-backend.onrender.com"
 const STEPS = ["Parsing resume...", "Analyzing job description...", "Computing scores...", "Generating insights..."]
 
 export default function UploadSection({ setResult, setLoading, setError, loading }) {
@@ -17,31 +18,39 @@ export default function UploadSection({ setResult, setLoading, setError, loading
     setLoading(true)
 
     try {
-      setStep(STEPS[0])
-      const formData = new FormData()
-      formData.append("file", file)
-      const parseRes = await axios.post("https://gapiq-backend.onrender.com/parse/resume", formData)
-      const resumeText = parseRes.data.text
+        setStep(STEPS[0])
+        const formData = new FormData()
+        formData.append("file", file)
+        const parseRes = await axios.post(`${BASE_URL}/parse/resume`, formData, {
+          timeout: 60000
+        })
+        const resumeText = parseRes.data.text
 
-      setStep(STEPS[1])
-      await new Promise(r => setTimeout(r, 500))
+        setStep(STEPS[1])
+        await new Promise(r => setTimeout(r, 500))
 
-      setStep(STEPS[2])
-      await new Promise(r => setTimeout(r, 500))
+        setStep(STEPS[2])
+        await new Promise(r => setTimeout(r, 500))
 
-      setStep(STEPS[3])
-      const analyzeRes = await axios.post("https://gapiq-backend.onrender.com/analyze", {
-        resume_text: resumeText,
-        jd_text: jdText
-      })
+        setStep(STEPS[3])
+        const analyzeRes = await axios.post(`${BASE_URL}/analyze`, {
+          resume_text: resumeText,
+          jd_text: jdText
+        }, {
+          timeout: 120000
+        })
 
-      setResult(analyzeRes.data)
-    } catch (err) {
-      setError(err.response?.data?.detail || "Something went wrong. Please try again.")
-    } finally {
-      setLoading(false)
-      setStep("")
-    }
+        setResult(analyzeRes.data)
+      } catch (err) {
+        if (err.code === "ECONNABORTED") {
+          setError("Request timed out. The server may be waking up — please try again in 30 seconds.")
+        } else {
+          setError(err.response?.data?.detail || "Something went wrong. Please try again.")
+        }
+      } finally {
+        setLoading(false)
+        setStep("")
+      }
   }
 
   return (

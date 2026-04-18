@@ -22,10 +22,10 @@ const LABELS = {
   }
 
   export default function ScoreSection({ scores }) {
-    const overall = result.scores.overall ||
-  Math.round(Object.entries(scores)
-    .filter(([k]) => k !== "overall")
-    .reduce((a, [,v]) => a + v, 0) / 5)
+    const axisScores = Object.entries(scores).filter(([k]) => k !== "overall")
+    const overall = scores.overall != null
+      ? scores.overall
+      : Math.round(axisScores.reduce((a, [,v]) => a + v, 0) / axisScores.length)
 
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -34,8 +34,8 @@ const LABELS = {
           <span className="text-3xl font-bold text-blue-600">{overall}%</span>
         </div>
         <div className="space-y-4">
-          {Object.entries(scores).map(([key, value]) => (
-            <ScoreBar key={key} label={LABELS[key]} value={value} />
+          {axisScores.map(([key, value]) => (
+            <ScoreBar key={key} label={LABELS[key] || key} value={value} />
           ))}
         </div>
       </div>

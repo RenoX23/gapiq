@@ -22,7 +22,10 @@ const LABELS = {
   }
 
   export default function ScoreSection({ scores }) {
-    const overall = Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / Object.values(scores).length)
+    const overall = result.scores.overall ||
+  Math.round(Object.entries(scores)
+    .filter(([k]) => k !== "overall")
+    .reduce((a, [,v]) => a + v, 0) / 5)
 
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-6">

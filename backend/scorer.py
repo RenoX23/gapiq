@@ -82,5 +82,15 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
         "language": min(100, language)
     }
 
+    # Weighted average — technical and experience matter most
+    weighted = (
+        scores["technical"] * 0.35 +
+        scores["experience"] * 0.25 +
+        scores["seniority"] * 0.15 +
+        scores["domain"] * 0.15 +
+        scores["language"] * 0.10
+    )
+    scores["overall"] = min(100, int(weighted))
+
     logger.info(f"Scores computed: {scores}")
     return scores

@@ -49,6 +49,14 @@ def score_seniority(signals: list, required: str) -> int:
     else:
         return 40
 
+def get_role_fit(overall: int) -> str:
+    if overall >= 70:
+        return "Strong Match"
+    elif overall >= 40:
+        return "Moderate Match"
+    else:
+        return "Weak Match"
+
 def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
     logger.info("Computing deterministic scores")
 
@@ -100,6 +108,7 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
         scores["language"] * 0.10
     )
     scores["overall"] = min(100, int(weighted))
+    scores["role_fit"] = get_role_fit(scores["overall"])
 
     breakdown = {
         "technical": technical_breakdown,

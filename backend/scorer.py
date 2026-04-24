@@ -19,6 +19,13 @@ def score_overlap(list_a: list, list_b: list) -> int:
     overlap = len(a.intersection(b))
     return min(100, int((overlap / len(b)) * 100))
 
+def get_skill_breakdown(list_a: list, list_b: list) -> dict:
+    a = set(s.lower() for s in list_a)
+    b = set(s.lower() for s in list_b)
+    matched = sorted(a.intersection(b))
+    missing = sorted(b - a)
+    return {"matched": matched, "missing": missing}
+
 def score_tfidf(text_a: str, text_b: str) -> int:
     if not text_a.strip() or not text_b.strip():
         return 0
@@ -47,6 +54,7 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
 
     # Technical — overlap on skills
     technical = score_overlap(resume.skills, jd.required_skills)
+    technical_breakdown = get_skill_breakdown(resume.skills, jd.required_skills)
 
     # Boost technical if partial matches exist
     if technical == 0:
@@ -64,6 +72,7 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
 
     # Domain — overlap plus TF-IDF fallback
     domain = score_overlap(resume.keywords, jd.keywords)
+    domain_breakdown = get_skill_breakdown(resume.keywords, jd.keywords)
     if domain == 0:
         domain_text_a = " ".join(resume.keywords + resume.skills)
         domain_text_b = " ".join(jd.keywords + jd.required_skills)
@@ -82,7 +91,7 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
         "language": min(100, language)
     }
 
-    # Weighted average — technical and experience matter most
+    # Weighted average
     weighted = (
         scores["technical"] * 0.35 +
         scores["experience"] * 0.25 +
@@ -92,5 +101,10 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
     )
     scores["overall"] = min(100, int(weighted))
 
+    breakdown = {
+        "technical": technical_breakdown,
+        "domain": domain_breakdown
+    }
+
     logger.info(f"Scores computed: {scores}")
-    return scores
+    return {"scores": scores, "breakdown": breakdown}

@@ -17,6 +17,14 @@ class ExtractionResult(BaseModel):
     resume: ParsedResume
     jd: ParsedJD
 
+class SkillBreakdown(BaseModel):
+    matched: List[str]
+    missing: List[str]
+
+class ScoreBreakdown(BaseModel):
+    technical: SkillBreakdown
+    domain: SkillBreakdown
+
 class SkillGap(BaseModel):
     skill: str
     priority: str
@@ -37,6 +45,7 @@ class RecruiterLens(BaseModel):
 
 class AnalysisOutput(BaseModel):
     scores: dict
+    breakdown: ScoreBreakdown
     gaps: List[SkillGap]
     recommendations: List[Recommendation]
     roadmap: List[RoadmapItem]

@@ -90,8 +90,8 @@ async def score(request: Request, payload: AnalysisInput):
     try:
         resume = extract_resume(payload.resume_text)
         jd = extract_jd(payload.jd_text)
-        scores = compute_scores(resume, jd)
-        return {"status": "ok", "scores": scores}
+        result = compute_scores(resume, jd)
+        return {"status": "ok", "scores": result["scores"], "breakdown": result["breakdown"]}
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
 
@@ -105,10 +105,11 @@ async def analyze(request: Request, payload: AnalysisInput):
     try:
         resume = extract_resume(payload.resume_text)
         jd = extract_jd(payload.jd_text)
-        scores = compute_scores(resume, jd)
-        enhancement = enhance(resume, jd, scores)
+        result = compute_scores(resume, jd)
+        enhancement = enhance(resume, jd, result["scores"])
         return AnalysisOutput(
-            scores=scores,
+            scores=result["scores"],
+            breakdown=result["breakdown"],
             gaps=enhancement["gaps"],
             recommendations=enhancement["recommendations"],
             roadmap=enhancement["roadmap"],
@@ -116,7 +117,6 @@ async def analyze(request: Request, payload: AnalysisInput):
         )
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
-
 
 @app.get("/")
 def root():

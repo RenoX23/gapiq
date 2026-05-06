@@ -102,7 +102,7 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
     # Weighted average
     weighted = (
         scores["technical"] * 0.35 +
-        scores["experience"] * 0.25 +
+        scores["experience"] * 0.30 +
         scores["seniority"] * 0.15 +
         scores["domain"] * 0.15 +
         scores["language"] * 0.10

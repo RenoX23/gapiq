@@ -52,7 +52,9 @@ def score_seniority(signals: list, required: str) -> int:
 def get_role_fit(overall: int) -> str:
     if overall >= 70:
         return "Strong Match"
-    elif overall >= 40:
+    elif overall >= 50:
+        return "Good Match"
+    elif overall >= 30:
         return "Moderate Match"
     else:
         return "Weak Match"
@@ -101,11 +103,11 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
 
     # Weighted average
     weighted = (
-        scores["technical"] * 0.35 +
-        scores["experience"] * 0.30 +
+        scores["technical"] * 0.37 +
+        scores["experience"] * 0.33 +
         scores["seniority"] * 0.15 +
-        scores["domain"] * 0.15 +
-        scores["language"] * 0.10
+        scores["domain"] * 0.17 +
+        scores["language"] * 0.15
     )
     scores["overall"] = min(100, int(weighted))
     scores["role_fit"] = get_role_fit(scores["overall"])

@@ -29,11 +29,20 @@ def get_skill_breakdown(list_a: list, list_b: list) -> dict:
 def score_tfidf(text_a: str, text_b: str) -> int:
     if not text_a.strip() or not text_b.strip():
         return 0
+
     try:
         vectorizer = TfidfVectorizer()
         tfidf = vectorizer.fit_transform([text_a, text_b])
-        similarity = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
-        return min(100, int(similarity * 100))
+
+        similarity = cosine_similarity(
+            tfidf[0:1],
+            tfidf[1:2]
+        )[0][0]
+
+        calibrated = 40 + (similarity * 60)
+
+        return max(0, min(100, int(calibrated)))
+
     except Exception:
         return 0
 
@@ -47,7 +56,7 @@ def score_seniority(signals: list, required: str) -> int:
     elif matches == 1:
         return 65
     else:
-        return 40
+        return 55
 
 def get_role_fit(overall: int) -> str:
     if overall >= 70:
@@ -55,7 +64,7 @@ def get_role_fit(overall: int) -> str:
     elif overall >= 50:
         return "Good Match"
     elif overall >= 30:
-        return "Moderate Match"
+        return "Potential Match"
     else:
         return "Weak Match"
 
@@ -103,11 +112,11 @@ def compute_scores(resume: ParsedResume, jd: ParsedJD) -> dict:
 
     # Weighted average
     weighted = (
-        scores["technical"] * 0.37 +
-        scores["experience"] * 0.33 +
-        scores["seniority"] * 0.15 +
-        scores["domain"] * 0.17 +
-        scores["language"] * 0.15
+        scores["technical"] * 0.40 +
+        scores["experience"] * 0.25 +
+        scores["seniority"] * 0.10 +
+        scores["domain"] * 0.15 +
+        scores["language"] * 0.10
     )
     scores["overall"] = min(100, int(weighted))
     scores["role_fit"] = get_role_fit(scores["overall"])

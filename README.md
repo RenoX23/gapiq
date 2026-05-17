@@ -417,15 +417,37 @@ Compatibility classification:
 
 # Screenshots 📸
 
+## Code Structure
 ![code strucuture](screenshots/code_structure.png)
+
+## Groq API
 ![groq api](screenshots/groq_api.png)
+
+## Vercel for Deployment
 ![Vercel](screenshots/vercel_ui.png)
+
+## Render for Backend
 ![Render](screenshots/render_ui.png)
+
+## GAPIQ-UI
 ![frontend page](screenshots/frontend_page.png)
+
+## Resume with Job Description
 ![Resume](screenshots/resume_jd.png)
+
+## Resume Matching Scores - Analysis
 ![Scores](screenshots/match_scores.png)
+
+## Skill Gaps - Analysis
 ![highlights](screenshots/highlights.png)
+
+## Resume Recommendation - Modifications
 ![recommendations](screenshots/recommendations.png)
+
+## Learning Roadmap - Analysis
+![lens](screenshots/certifications.png)
+
+## Recruiter Lens - Scanning
 ![lens](screenshots/recruiter_lens.png)
 
 
